@@ -28,6 +28,8 @@ import {
   requireNativeComponent,
 } from 'react-native';
 
+import { SELECTION_TYPES, type SelectionType } from './common-types';
+
 const RCTCalendarView = requireNativeComponent('RCTCalendarView');
 
 const styles = StyleSheet.create({
@@ -48,6 +50,7 @@ export type Props = {
     },
   }) => mixed,
   selectedDates: [Date],
+  selectionType: SelectionType,
   style: ?StyleObj,
 };
 
@@ -56,6 +59,15 @@ const getDateOneYearFromNow = () => {
   const monthOneYearFromNow = date.getMonth() + 12;
   date.setMonth(monthOneYearFromNow);
   return date;
+};
+
+const onDateSelection = (event, callbackFn) => {
+  const datesConverted = event.nativeEvent.selectedDates.map(
+    dateString => new Date(Date.parse(dateString)),
+  );
+  if (callbackFn) {
+    callbackFn(datesConverted);
+  }
 };
 
 const BpkCalendar = (props: Props) => {
@@ -71,12 +83,7 @@ const BpkCalendar = (props: Props) => {
       <RCTCalendarView
         locale="en-GB"
         onDateSelection={event => {
-          const datesConverted = event.nativeEvent.selectedDates.map(
-            dateString => new Date(Date.parse(dateString)),
-          );
-          if (onDateSelectionChanged) {
-            onDateSelectionChanged(datesConverted);
-          }
+          onDateSelection(event, onDateSelectionChanged);
         }}
         {...rest}
       />
@@ -89,6 +96,7 @@ BpkCalendar.propTypes = {
   maxDate: PropTypes.instanceOf(Date),
   onDateSelectionChanged: PropTypes.func,
   selectedDates: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
+  selectionType: PropTypes.oneOf(Object.keys(SELECTION_TYPES)),
   style: ViewPropTypes.style,
 };
 
@@ -97,6 +105,7 @@ BpkCalendar.defaultProps = {
   maxDate: getDateOneYearFromNow(),
   onDateSelectionChanged: null,
   selectedDates: [],
+  selectionType: SELECTION_TYPES.single,
   style: null,
 };
 

@@ -21,12 +21,93 @@ import { StyleSheet } from 'react-native';
 import renderer from 'react-test-renderer';
 
 import BpkCalendar from './BpkCalendar';
+import { SELECTION_TYPES } from './common-types';
+
+const HARD_CODED_LOCALE = 'en_GB';
 
 const commonTests = () => {
   describe('BpkCalendar', () => {
     it('should render correctly', () => {
-      const tree = renderer.create(<BpkCalendar />).toJSON();
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+          />,
+        )
+        .toJSON();
       expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with minDate and maxDate', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+            minDate={new Date(2019, 4, 19)}
+            maxDate={new Date(2020, 4, 19)}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with selection type "single" and selected dates', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+            selectedDates={[new Date(2019, 4, 19)]}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with selection type "range" and selected dates', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+            selectedDates={[new Date(2019, 4, 19), new Date(2019, 4, 21)]}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with selection type "multiple" and selected dates', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+            selectedDates={[
+              new Date(2019, 4, 19),
+              new Date(2019, 4, 21),
+              new Date(2019, 4, 29),
+            ]}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    Object.keys(SELECTION_TYPES).forEach(selectionType => {
+      it(`should render correctly for selectionType={'${selectionType}'}`, () => {
+        const tree = renderer
+          .create(
+            <BpkCalendar
+              locale={HARD_CODED_LOCALE}
+              selectionType={selectionType}
+            />,
+          )
+          .toJSON();
+        expect(tree).toMatchSnapshot();
+      });
     });
 
     it('should render correctly with custom style', () => {
@@ -37,7 +118,13 @@ const commonTests = () => {
       });
 
       const tree = renderer
-        .create(<BpkCalendar style={styles.custom} />)
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
+            style={styles.custom}
+          />,
+        )
         .toJSON();
       expect(tree).toMatchSnapshot();
     });
@@ -46,6 +133,8 @@ const commonTests = () => {
       const tree = renderer
         .create(
           <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            locale={HARD_CODED_LOCALE}
             testID="123" // <- Arbitrary prop.
           />,
         )

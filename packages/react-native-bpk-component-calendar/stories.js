@@ -27,7 +27,14 @@ import BpkButton from 'react-native-bpk-component-button';
 import CenterDecorator from '../../storybook/CenterDecorator';
 import BpkCalendar from './index';
 
-class DatePickerExample extends Component {
+class DatePickerExample extends Component<
+  {},
+  {
+    selectedDateString: string,
+    showCalendar: boolean,
+    selectedDates: Date[],
+  },
+> {
   constructor(props) {
     super(props);
 
@@ -39,7 +46,7 @@ class DatePickerExample extends Component {
   }
 
   handleTextEdit = value => {
-    let selectedDates = this.state.selectedDates;
+    let { selectedDates } = this.state;
     if (value === '') {
       selectedDates = [];
     }
@@ -89,7 +96,13 @@ class DatePickerExample extends Component {
   }
 }
 
-class BpkCalendarExample extends Component {
+// eslint-disable-next-line react/no-multi-comp
+class BpkCalendarExample extends Component<
+  {},
+  {
+    selectedDates: Date[],
+  },
+> {
   constructor(props) {
     super(props);
 
@@ -99,6 +112,7 @@ class BpkCalendarExample extends Component {
   render() {
     return (
       <BpkCalendar
+        locale="en_GB"
         selectionType="multiple"
         selectedDates={this.state.selectedDates}
         onDateSelectionChanged={newDates => {

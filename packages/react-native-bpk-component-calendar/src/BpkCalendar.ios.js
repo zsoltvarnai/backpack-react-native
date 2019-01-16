@@ -40,12 +40,13 @@ const styles = StyleSheet.create({
 });
 
 export type Props = {
+  locale: string,
   minDate: Date,
   maxDate: Date,
   onDateSelectionChanged: ?({
     event: {
       nativeEvent: {
-        selectedDates: [string],
+        selectedDates: string[],
       },
     },
   }) => mixed,
@@ -81,7 +82,6 @@ const BpkCalendar = (props: Props) => {
   return (
     <View style={style} {...rest}>
       <RCTCalendarView
-        locale="en-GB"
         onDateSelection={event => {
           onDateSelection(event, onDateSelectionChanged);
         }}
@@ -92,6 +92,7 @@ const BpkCalendar = (props: Props) => {
 };
 
 BpkCalendar.propTypes = {
+  locale: PropTypes.string.isRequired,
   minDate: PropTypes.instanceOf(Date),
   maxDate: PropTypes.instanceOf(Date),
   onDateSelectionChanged: PropTypes.func,

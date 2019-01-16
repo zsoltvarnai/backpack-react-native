@@ -59,6 +59,8 @@ export default () => (
 
 ### BpkCalendar
 
+TODO finish this
+
 | Property                | PropType       | Required   | Default Value    |
 | ----------------------- | -------------- | ---------- | ---------------- |
 | maxDate                 | Date           | false      | new Date() + 1yr |

@@ -68,6 +68,11 @@ export default () => (
 | selectedDates           | Array(Date)            | false      | null                   |
 | selectionType           | oneOf(SELECTION_TYPES) | false      | SELECTION_TYPES.single |
 
-#### Locale
+#### locale
 
 TODO explain locale
+
+#### selectedDates
+
+* When `selectionType` is `SELECTION_TYPES.single`, you should only include zero or one entries in the `selectedDates` array.
+* When `selectionType` is `SELECTION_TYPES.range`, you should only include zero, one or two entries in the `selectedDates` array.

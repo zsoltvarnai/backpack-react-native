@@ -25,8 +25,6 @@ import { SELECTION_TYPES } from './common-types';
 
 const defaultProps = {
   locale: 'en_GB',
-  minDate: new Date(2019, 4, 19),
-  maxDate: new Date(2020, 4, 19),
 };
 
 const commonTests = () => {
@@ -37,6 +35,46 @@ const commonTests = () => {
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
             {...defaultProps}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with minDate', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            {...defaultProps}
+            minDate={new Date(2019, 4, 19)}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with maxDate', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            {...defaultProps}
+            maxDate={new Date(2020, 4, 19)}
+          />,
+        )
+        .toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('should render correctly with both minDate and maxDate', () => {
+      const tree = renderer
+        .create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            {...defaultProps}
+            minDate={new Date(2019, 4, 19)}
+            maxDate={new Date(2020, 4, 19)}
           />,
         )
         .toJSON();
@@ -66,6 +104,19 @@ const commonTests = () => {
         />,
       );
       expect(console.error).toHaveBeenCalled();
+    });
+
+    it('should error if when maxDate is before minDate', () => {
+      expect(() => {
+        renderer.create(
+          <BpkCalendar
+            selectionType={SELECTION_TYPES.single}
+            minDate={new Date(2020, 4, 19)}
+            maxDate={new Date(2019, 4, 19)}
+            {...defaultProps}
+          />,
+        );
+      }).toThrowError('BpkCalendar: "minDate" must be before "maxDate"');
     });
 
     it('should render correctly with selection type "range" and selected dates', () => {

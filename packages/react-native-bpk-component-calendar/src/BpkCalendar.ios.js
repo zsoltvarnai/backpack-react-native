@@ -41,16 +41,32 @@ export type Props = {
 };
 
 const BpkCalendar = (props: Props) => {
-  const { onChangeSelectedDates, style: userStyle, ...rest } = props;
+  const {
+    minDate,
+    maxDate,
+    onChangeSelectedDates,
+    style: userStyle,
+    ...rest
+  } = props;
 
   const style = [styles.base];
   if (userStyle) {
     style.push(userStyle);
   }
 
+  if (minDate && maxDate) {
+    if (minDate > maxDate) {
+      // It's safer to throw an error rather than use a prop type because if
+      // we let this get rendered it will crash the calendar.
+      throw new Error(`BpkCalendar: "minDate" must be before "maxDate".`);
+    }
+  }
+
   return (
     <View style={style} {...rest}>
       <RCTCalendarView
+        minDate={minDate}
+        maxDate={maxDate}
         onDateSelection={event => {
           if (event.nativeEvent.selectedDates) {
             const convertedDates = event.nativeEvent.selectedDates.map(

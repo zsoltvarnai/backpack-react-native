@@ -31,8 +31,8 @@ export type SelectionType = $Keys<typeof SELECTION_TYPES>;
 
 export type CommonProps = {
   locale: string,
-  minDate: Date,
-  maxDate: Date,
+  minDate: ?Date,
+  maxDate: ?Date,
   onChangeSelectedDates: ?(Date[]) => mixed,
   selectedDates: Date[],
   selectionType: SelectionType,
@@ -82,16 +82,9 @@ export const commonPropTypes = {
   style: ViewPropTypes.style,
 };
 
-const getDateOneYearFromNow = () => {
-  const date = new Date();
-  const monthOneYearFromNow = date.getMonth() + 12;
-  date.setMonth(monthOneYearFromNow);
-  return date;
-};
-
 export const commonDefaultProps = {
-  minDate: new Date(),
-  maxDate: getDateOneYearFromNow(),
+  minDate: null,
+  maxDate: null,
   onChangeSelectedDates: null,
   selectedDates: [],
   selectionType: SELECTION_TYPES.single,

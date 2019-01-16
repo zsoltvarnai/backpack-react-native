@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
 export default () => (
   <View style={styles.container}>
     <BpkCalendar
-      minDate={new Date()}
-      maxDate={new Date()}
       selectionType={SELECTION_TYPES.single}
       selectedDates={[new Date()]}
       onChangeSelectedDates={newDates => {
@@ -62,8 +60,8 @@ export default () => (
 | Property                | PropType               | Required   | Default Value          |
 | ----------------------- | ---------------------- | ---------- | ---------------------- |
 | locale                  | string                 | true       | -                      |
-| maxDate                 | Date                   | false      | new Date() + 1yr       |
-| minDate                 | Date                   | false      | new Date()             |
+| maxDate                 | Date                   | false      | null                   |
+| minDate                 | Date                   | false      | null                   |
 | onChangeSelectedDates   | function               | false      | null                   |
 | selectedDates           | Array(Date)            | false      | null                   |
 | selectionType           | oneOf(SELECTION_TYPES) | false      | SELECTION_TYPES.single |

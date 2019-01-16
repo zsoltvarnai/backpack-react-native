@@ -19,16 +19,13 @@
 /* @flow */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import {
-  type StyleObj,
-  StyleSheet,
-  View,
-  ViewPropTypes,
-  requireNativeComponent,
-} from 'react-native';
+import { StyleSheet, View, requireNativeComponent } from 'react-native';
 
-import { SELECTION_TYPES, type SelectionType } from './common-types';
+import {
+  commonPropTypes,
+  commonDefaultProps,
+  type CommonProps,
+} from './common-types';
 
 const RCTCalendarView = requireNativeComponent('RCTCalendarView');
 
@@ -40,29 +37,10 @@ const styles = StyleSheet.create({
 });
 
 export type Props = {
-  locale: string,
-  minDate: Date,
-  maxDate: Date,
-  onDateSelectionChanged: ?({
-    event: {
-      nativeEvent: {
-        selectedDates: string[],
-      },
-    },
-  }) => mixed,
-  selectedDates: [Date],
-  selectionType: SelectionType,
-  style: ?StyleObj,
+  ...$Exact<CommonProps>,
 };
 
-const getDateOneYearFromNow = () => {
-  const date = new Date();
-  const monthOneYearFromNow = date.getMonth() + 12;
-  date.setMonth(monthOneYearFromNow);
-  return date;
-};
-
-const onDateSelection = (event, callbackFn) => {
+const onDateSelection = (event, selectionType, callbackFn) => {
   const datesConverted = event.nativeEvent.selectedDates.map(
     dateString => new Date(Date.parse(dateString)),
   );
@@ -71,8 +49,13 @@ const onDateSelection = (event, callbackFn) => {
   }
 };
 
-const BpkCalendar = (props: Props) => {
-  const { onDateSelectionChanged, style: userStyle, ...rest } = props;
+const BpkCalendarInner = (props: Props) => {
+  const {
+    onDateSelectionChanged,
+    selectionType,
+    style: userStyle,
+    ...rest
+  } = props;
 
   const style = [styles.base];
   if (userStyle) {
@@ -83,7 +66,7 @@ const BpkCalendar = (props: Props) => {
     <View style={style} {...rest}>
       <RCTCalendarView
         onDateSelection={event => {
-          onDateSelection(event, onDateSelectionChanged);
+          onDateSelection(event, selectionType, onDateSelectionChanged);
         }}
         {...rest}
       />
@@ -91,23 +74,7 @@ const BpkCalendar = (props: Props) => {
   );
 };
 
-BpkCalendar.propTypes = {
-  locale: PropTypes.string.isRequired,
-  minDate: PropTypes.instanceOf(Date),
-  maxDate: PropTypes.instanceOf(Date),
-  onDateSelectionChanged: PropTypes.func,
-  selectedDates: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
-  selectionType: PropTypes.oneOf(Object.keys(SELECTION_TYPES)),
-  style: ViewPropTypes.style,
-};
+BpkCalendarInner.propTypes = commonPropTypes;
+BpkCalendarInner.defaultProps = commonDefaultProps;
 
-BpkCalendar.defaultProps = {
-  minDate: new Date(),
-  maxDate: getDateOneYearFromNow(),
-  onDateSelectionChanged: null,
-  selectedDates: [],
-  selectionType: SELECTION_TYPES.single,
-  style: null,
-};
-
-export default BpkCalendar;
+export default BpkCalendarInner;

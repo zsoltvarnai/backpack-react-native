@@ -30,7 +30,7 @@ For example:
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { spacingBase } from 'bpk-tokens/tokens/base.react.native';
-import BpkCalendar from 'react-native-bpk-component-calendar';
+import BpkCalendar, { SELECTION_TYPES } from 'react-native-bpk-component-calendar';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,9 +45,9 @@ export default () => (
     <BpkCalendar
       minDate={new Date()}
       maxDate={new Date()}
-      selectionType="single"
+      selectionType={SELECTION_TYPES.single}
       selectedDates={[new Date()]}
-      onDatesSelected={newDates => {
+      onChangeDates={newDates => {
         console.warn("Date selection changed");
       }}
     />
@@ -59,12 +59,15 @@ export default () => (
 
 ### BpkCalendar
 
-TODO finish this
+| Property                | PropType               | Required   | Default Value          |
+| ----------------------- | ---------------------- | ---------- | ---------------------- |
+| locale                  | string                 | true       | -                      |
+| maxDate                 | Date                   | false      | new Date() + 1yr       |
+| minDate                 | Date                   | false      | new Date()             |
+| onChangeDates           | function               | false      | null                   |
+| selectedDates           | Array(Date)            | false      | null                   |
+| selectionType           | oneOf(SELECTION_TYPES) | false      | SELECTION_TYPES.single |
 
-| Property                | PropType       | Required   | Default Value    |
-| ----------------------- | -------------- | ---------- | ---------------- |
-| maxDate                 | Date           | false      | new Date() + 1yr |
-| minDate                 | Date           | false      | new Date()       |
-| selectedDates           | Array(Date)    | false      | []               |
-| onDateSelectionChanged  | function       | false      | null             |
+#### Locale
 
+TODO explain locale

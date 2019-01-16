@@ -18,7 +18,9 @@
 
 /* @flow */
 
-// eslint-disable-next-line import/prefer-default-export
+import { ViewPropTypes, type StyleObj } from 'react-native';
+import PropTypes from 'prop-types';
+
 export const SELECTION_TYPES = {
   single: 'single',
   range: 'range',
@@ -26,3 +28,39 @@ export const SELECTION_TYPES = {
 };
 
 export type SelectionType = $Keys<typeof SELECTION_TYPES>;
+
+export type CommonProps = {
+  locale: string,
+  minDate: Date,
+  maxDate: Date,
+  onChangeDates: ?(Date[]) => mixed,
+  selectedDates: Date[],
+  selectionType: SelectionType,
+  style: ?StyleObj,
+};
+
+export const commonPropTypes = {
+  locale: PropTypes.string.isRequired,
+  minDate: PropTypes.instanceOf(Date),
+  maxDate: PropTypes.instanceOf(Date),
+  onChangeDates: PropTypes.func,
+  selectedDates: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
+  selectionType: PropTypes.oneOf(Object.keys(SELECTION_TYPES)),
+  style: ViewPropTypes.style,
+};
+
+const getDateOneYearFromNow = () => {
+  const date = new Date();
+  const monthOneYearFromNow = date.getMonth() + 12;
+  date.setMonth(monthOneYearFromNow);
+  return date;
+};
+
+export const commonDefaultProps = {
+  minDate: new Date(),
+  maxDate: getDateOneYearFromNow(),
+  onChangeDates: null,
+  selectedDates: [],
+  selectionType: SELECTION_TYPES.single,
+  style: null,
+};

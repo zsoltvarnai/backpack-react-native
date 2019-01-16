@@ -39,12 +39,45 @@ export type CommonProps = {
   style: ?StyleObj,
 };
 
+const selectedDatesPropType = (
+  props: { [string]: any },
+  propName: string,
+  componentName: string,
+  ...rest: [any]
+) => {
+  if (props[propName]) {
+    const selectedDatesCount = props[propName].length;
+    if (
+      props.selectionType === SELECTION_TYPES.single &&
+      selectedDatesCount > 1
+    ) {
+      return new Error(
+        `${componentName}: When "selectionType" is "single", only supply one date to "selectedDates"`,
+      );
+    }
+    if (
+      props.selectionType === SELECTION_TYPES.range &&
+      selectedDatesCount > 2
+    ) {
+      return new Error(
+        `${componentName}: When "selectionType" is "range", only supply one or two dates to "selectedDates"`,
+      );
+    }
+  }
+  return PropTypes.arrayOf(PropTypes.instanceOf(Date))(
+    props,
+    propName,
+    componentName,
+    ...rest,
+  );
+};
+
 export const commonPropTypes = {
   locale: PropTypes.string.isRequired,
   minDate: PropTypes.instanceOf(Date),
   maxDate: PropTypes.instanceOf(Date),
   onChangeSelectedDates: PropTypes.func,
-  selectedDates: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
+  selectedDates: selectedDatesPropType,
   selectionType: PropTypes.oneOf(Object.keys(SELECTION_TYPES)),
   style: ViewPropTypes.style,
 };

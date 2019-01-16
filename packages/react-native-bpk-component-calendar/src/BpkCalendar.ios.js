@@ -40,16 +40,7 @@ export type Props = {
   ...$Exact<CommonProps>,
 };
 
-const onDateSelection = (event, callbackFn) => {
-  const datesConverted = event.nativeEvent.selectedDates.map(
-    dateString => new Date(Date.parse(dateString)),
-  );
-  if (callbackFn) {
-    callbackFn(datesConverted);
-  }
-};
-
-const BpkCalendarInner = (props: Props) => {
+const BpkCalendar = (props: Props) => {
   const { onChangeSelectedDates, style: userStyle, ...rest } = props;
 
   const style = [styles.base];
@@ -61,7 +52,14 @@ const BpkCalendarInner = (props: Props) => {
     <View style={style} {...rest}>
       <RCTCalendarView
         onDateSelection={event => {
-          onDateSelection(event, onChangeSelectedDates);
+          if (event.nativeEvent.selectedDates) {
+            const convertedDates = event.nativeEvent.selectedDates.map(
+              dateString => new Date(Date.parse(dateString)),
+            );
+            if (onChangeSelectedDates) {
+              onChangeSelectedDates(convertedDates);
+            }
+          }
         }}
         {...rest}
       />
@@ -69,7 +67,7 @@ const BpkCalendarInner = (props: Props) => {
   );
 };
 
-BpkCalendarInner.propTypes = commonPropTypes;
-BpkCalendarInner.defaultProps = commonDefaultProps;
+BpkCalendar.propTypes = commonPropTypes;
+BpkCalendar.defaultProps = commonDefaultProps;
 
-export default BpkCalendarInner;
+export default BpkCalendar;

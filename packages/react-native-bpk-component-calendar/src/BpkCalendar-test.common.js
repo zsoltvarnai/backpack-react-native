@@ -23,7 +23,11 @@ import renderer from 'react-test-renderer';
 import BpkCalendar from './BpkCalendar';
 import { SELECTION_TYPES } from './common-types';
 
-const HARD_CODED_LOCALE = 'en_GB';
+const defaultProps = {
+  locale: 'en_GB',
+  minDate: new Date(2019, 4, 19),
+  maxDate: new Date(2020, 4, 19),
+};
 
 const commonTests = () => {
   describe('BpkCalendar', () => {
@@ -32,21 +36,7 @@ const commonTests = () => {
         .create(
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
-          />,
-        )
-        .toJSON();
-      expect(tree).toMatchSnapshot();
-    });
-
-    it('should render correctly with minDate and maxDate', () => {
-      const tree = renderer
-        .create(
-          <BpkCalendar
-            selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
-            minDate={new Date(2019, 4, 19)}
-            maxDate={new Date(2020, 4, 19)}
+            {...defaultProps}
           />,
         )
         .toJSON();
@@ -58,12 +48,24 @@ const commonTests = () => {
         .create(
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
             selectedDates={[new Date(2019, 4, 19)]}
+            {...defaultProps}
           />,
         )
         .toJSON();
       expect(tree).toMatchSnapshot();
+    });
+
+    it('should error with selection type "single" and selectedDates.length > 1', () => {
+      jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
+      renderer.create(
+        <BpkCalendar
+          selectionType={SELECTION_TYPES.single}
+          selectedDates={[new Date(2019, 4, 19), new Date(2019, 4, 20)]}
+          {...defaultProps}
+        />,
+      );
+      expect(console.error).toHaveBeenCalled();
     });
 
     it('should render correctly with selection type "range" and selected dates', () => {
@@ -71,25 +73,41 @@ const commonTests = () => {
         .create(
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
             selectedDates={[new Date(2019, 4, 19), new Date(2019, 4, 21)]}
+            {...defaultProps}
           />,
         )
         .toJSON();
       expect(tree).toMatchSnapshot();
     });
 
+    it('should error with selection type "range" and selectedDates.length > 2', () => {
+      jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
+      renderer.create(
+        <BpkCalendar
+          selectionType={SELECTION_TYPES.range}
+          selectedDates={[
+            new Date(2019, 4, 19),
+            new Date(2019, 4, 20),
+            new Date(2019, 4, 21),
+          ]}
+          {...defaultProps}
+        />,
+      );
+      expect(console.error).toHaveBeenCalled();
+    });
+
     it('should render correctly with selection type "multiple" and selected dates', () => {
       const tree = renderer
         .create(
           <BpkCalendar
-            selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
+            selectionType={SELECTION_TYPES.multiple}
             selectedDates={[
               new Date(2019, 4, 19),
               new Date(2019, 4, 21),
               new Date(2019, 4, 29),
             ]}
+            {...defaultProps}
           />,
         )
         .toJSON();
@@ -100,10 +118,7 @@ const commonTests = () => {
       it(`should render correctly for selectionType={'${selectionType}'}`, () => {
         const tree = renderer
           .create(
-            <BpkCalendar
-              locale={HARD_CODED_LOCALE}
-              selectionType={selectionType}
-            />,
+            <BpkCalendar selectionType={selectionType} {...defaultProps} />,
           )
           .toJSON();
         expect(tree).toMatchSnapshot();
@@ -121,7 +136,7 @@ const commonTests = () => {
         .create(
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
+            {...defaultProps}
             style={styles.custom}
           />,
         )
@@ -134,7 +149,7 @@ const commonTests = () => {
         .create(
           <BpkCalendar
             selectionType={SELECTION_TYPES.single}
-            locale={HARD_CODED_LOCALE}
+            {...defaultProps}
             testID="123" // <- Arbitrary prop.
           />,
         )

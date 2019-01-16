@@ -22,90 +22,28 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import BpkTextInput from 'react-native-bpk-component-text-input';
-import BpkButton from 'react-native-bpk-component-button';
+import BpkPicker, { BpkPickerItem } from 'react-native-bpk-component-picker';
+import BpkSelect from 'react-native-bpk-component-select';
 
 import CenterDecorator from '../../storybook/CenterDecorator';
-import BpkCalendar from './index';
+import BpkCalendar, {
+  SELECTION_TYPES,
+  type BpkCalendarSelectionType,
+} from './index';
 
-class DatePickerExample extends Component<
-  {},
-  {
-    selectedDateString: string,
-    showCalendar: boolean,
-    selectedDates: Date[],
-  },
-> {
-  constructor(props) {
-    super(props);
+/* eslint-disable react/no-multi-comp */
 
-    this.state = {
-      selectedDateString: '',
-      showCalendar: false,
-      selectedDates: [],
-    };
-  }
-
-  handleTextEdit = value => {
-    let { selectedDates } = this.state;
-    if (value === '') {
-      selectedDates = [];
-    }
-    this.setState({ selectedDates, selectedDateString: value });
-  };
-
-  handleNewDates = newDates => {
-    let selectedDateString = '';
-    if (newDates.length > 0) {
-      const firstDate = newDates[0].toLocaleDateString();
-      selectedDateString = firstDate;
-    }
-    this.setState({
-      selectedDates: newDates,
-      selectedDateString,
-    });
-  };
-
-  render() {
-    return (
-      <View>
-        <BpkTextInput
-          label="Selected date"
-          value={this.state.selectedDateString}
-          placeholder="No date selected"
-          onChangeText={this.handleTextEdit}
-        />
-        <BpkButton
-          title={this.state.showCalendar ? 'Hide calendar' : 'Select a date'}
-          onPress={() => {
-            this.setState(prevState => ({
-              showCalendar: !prevState.showCalendar,
-            }));
-          }}
-        />
-        {this.state.showCalendar && (
-          <BpkCalendar
-            selectionType="single"
-            selectedDates={this.state.selectedDates}
-            onDateSelectionChanged={newDates => {
-              this.handleNewDates(newDates);
-            }}
-          />
-        )}
-      </View>
-    );
-  }
-}
-
-// eslint-disable-next-line react/no-multi-comp
 class BpkCalendarExample extends Component<
-  {},
+  {
+    onChangeSelectedDates?: (Date[]) => mixed,
+    selectionType: BpkCalendarSelectionType,
+  },
   {
     selectedDates: Date[],
   },
 > {
   constructor(props) {
     super(props);
-
     this.state = { selectedDates: [] };
   }
 
@@ -113,9 +51,12 @@ class BpkCalendarExample extends Component<
     return (
       <BpkCalendar
         locale="en_GB"
-        selectionType="multiple"
+        selectionType={this.props.selectionType}
         selectedDates={this.state.selectedDates}
-        onDateSelectionChanged={newDates => {
+        onChangeSelectedDates={newDates => {
+          if (this.props.onChangeSelectedDates) {
+            this.props.onChangeSelectedDates(newDates);
+          }
           this.setState({ selectedDates: newDates });
         }}
       />
@@ -123,7 +64,134 @@ class BpkCalendarExample extends Component<
   }
 }
 
+class ExampleWithLinkedInputs extends Component<
+  {
+    range: boolean,
+  },
+  {
+    selectedDates: Date[],
+  },
+> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedDates: [],
+    };
+  }
+
+  onChangeText = value => {
+    let { selectedDates } = this.state;
+    if (value === '') {
+      selectedDates = [];
+    }
+    this.setState({ selectedDates });
+  };
+
+  handleNewDates = newDates => {
+    this.setState({
+      selectedDates: newDates,
+    });
+  };
+
+  render() {
+    const { range } = this.props;
+    const { selectedDates } = this.state;
+    return (
+      <View>
+        <BpkTextInput
+          label={range ? 'Start date' : 'Selected date'}
+          value={selectedDates[0] ? selectedDates[0].toLocaleDateString() : ''}
+          onChangeText={this.onChangeText}
+        />
+        {range && (
+          <BpkTextInput
+            editable={!!selectedDates[0]}
+            label="End date"
+            value={
+              selectedDates[1] ? selectedDates[1].toLocaleDateString() : ''
+            }
+            onChangeText={this.onChangeText}
+          />
+        )}
+        <BpkCalendarExample
+          selectionType={range ? SELECTION_TYPES.range : SELECTION_TYPES.single}
+          selectedDates={this.state.selectedDates}
+          onChangeSelectedDates={this.handleNewDates}
+        />
+      </View>
+    );
+  }
+}
+
+class ChangeableSelectionTypeStory extends Component<
+  {},
+  {
+    pickerOpen: boolean,
+    selectionType: BpkCalendarSelectionType,
+  },
+> {
+  constructor() {
+    super();
+    this.state = {
+      pickerOpen: false,
+      selectionType: SELECTION_TYPES.single,
+    };
+  }
+
+  onSelectionTypeChange = (selectionType: BpkCalendarSelectionType) => {
+    this.setState({
+      selectionType,
+    });
+  };
+
+  togglePicker = () => {
+    this.setState(prevState => ({ pickerOpen: !prevState.pickerOpen }));
+  };
+
+  render() {
+    return (
+      <View>
+        <BpkSelect
+          onPress={this.togglePicker}
+          label={this.state.selectionType}
+        />
+        <BpkCalendarExample selectionType={this.state.selectionType} />
+        <BpkPicker
+          doneLabel="Done"
+          isOpen={this.state.pickerOpen}
+          onClose={this.togglePicker}
+          onValueChange={this.onSelectionTypeChange}
+          selectedValue={this.state.selectionType}
+        >
+          {Object.keys(SELECTION_TYPES).map(selectionType => (
+            <BpkPickerItem
+              key={selectionType}
+              label={selectionType}
+              value={selectionType}
+            />
+          ))}
+        </BpkPicker>
+      </View>
+    );
+  }
+}
+
 storiesOf('react-native-bpk-component-calendar', module)
   .addDecorator(CenterDecorator)
-  .add('default', () => <BpkCalendarExample />)
-  .add('date-picker', () => <DatePickerExample />);
+  .add('docs:single', () => (
+    <BpkCalendarExample selectionType={SELECTION_TYPES.single} />
+  ))
+  .add('docs:multiple', () => (
+    <BpkCalendarExample selectionType={SELECTION_TYPES.multiple} />
+  ))
+  .add('docs:range', () => (
+    <BpkCalendarExample selectionType={SELECTION_TYPES.range} />
+  ))
+  .add('Changeable selection type', () => <ChangeableSelectionTypeStory />)
+  .add('Hooked up to input field (single)', () => (
+    <ExampleWithLinkedInputs range={false} />
+  ))
+  .add('Hooked up to input field (range)', () => (
+    <ExampleWithLinkedInputs range />
+  ));

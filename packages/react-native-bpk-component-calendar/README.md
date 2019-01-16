@@ -47,7 +47,7 @@ export default () => (
       maxDate={new Date()}
       selectionType={SELECTION_TYPES.single}
       selectedDates={[new Date()]}
-      onChangeDates={newDates => {
+      onChangeSelectedDates={newDates => {
         console.warn("Date selection changed");
       }}
     />
@@ -64,7 +64,7 @@ export default () => (
 | locale                  | string                 | true       | -                      |
 | maxDate                 | Date                   | false      | new Date() + 1yr       |
 | minDate                 | Date                   | false      | new Date()             |
-| onChangeDates           | function               | false      | null                   |
+| onChangeSelectedDates   | function               | false      | null                   |
 | selectedDates           | Array(Date)            | false      | null                   |
 | selectionType           | oneOf(SELECTION_TYPES) | false      | SELECTION_TYPES.single |
 

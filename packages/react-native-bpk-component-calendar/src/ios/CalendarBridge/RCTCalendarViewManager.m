@@ -19,20 +19,24 @@
 #import "RCTCalendarViewManager.h"
 #import "RCTConvert+RCTCalendarView.h"
 
+
 @implementation RCTCalendarViewManager
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
-{
-    RCTCalendarView *calendar = [RCTCalendarView new];
-    
-    calendar.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-                                              [calendar.widthAnchor constraintEqualToConstant:300],
-                                              [calendar.heightAnchor constraintEqualToConstant:500]
-                                              ]];
-    
+- (UIView *)view {
+    RCTCalendarView *calendar = [[RCTCalendarView alloc] initWithFrame:CGRectZero];
+
+    // Note: This is where we hard coded constraints to make the calendar display correctly in development.
+    // We want to remove these and have React Native define the layout based on the flex properties coming
+    // over the bridge.
+
+//    calendar.translatesAutoresizingMaskIntoConstraints = NO;
+//    [NSLayoutConstraint activateConstraints:@[
+//                                              [calendar.widthAnchor constraintEqualToConstant:300],
+//                                              [calendar.heightAnchor constraintEqualToConstant:500]
+//                                              ]];
+
     calendar.delegate = self;
     return calendar;
 }
@@ -51,20 +55,19 @@ RCT_EXPORT_VIEW_PROPERTY(onDateSelection, RCTBubblingEventBlock)
  * `RCTCalendarViewManager` acts as the delegate of all of the `RCTCalendarView` views. This is just one
  * pattern and it's perfectly fine to call `onDateSelection` from the `RCTCalendarView` directly.
  */
-- (void)calendar:(RCTCalendarView *)calendar didChangeDateSelection:(NSArray<NSDate *> *)dateList
-{
+- (void)calendar:(RCTCalendarView *)calendar didChangeDateSelection:(NSArray<NSDate *> *)dateList {
     if (!calendar.onDateSelection) {
         return;
     }
-    
+
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
-    
+
     NSMutableArray * stringArray = [[NSMutableArray alloc]init];
     for (NSDate *date in dateList) {
         [stringArray addObject:[dateFormat stringFromDate:date]];
     }
-    
+
     calendar.onDateSelection(@{@"selectedDates": stringArray});
 }
 
